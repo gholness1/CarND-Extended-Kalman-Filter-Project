@@ -23,6 +23,9 @@ public:
   // measurement covariance matrix
   Eigen::MatrixXd R_;
 
+  //Identity matrix
+  Eigen::MatrixXd I_;
+
   /**
    * Constructor
    */
@@ -64,6 +67,7 @@ public:
    */
   void UpdateEKF(const Eigen::VectorXd &z);
 
+  Eigen::VectorXd h(const Eigen::VectorXd &x_prime);
 };
 
 #endif /* KALMAN_FILTER_H_ */

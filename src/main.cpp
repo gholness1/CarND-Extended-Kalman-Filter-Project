@@ -4,6 +4,7 @@
 #include <math.h>
 #include "FusionEKF.h"
 #include "tools.h"
+#include "debug.h"
 
 using namespace std;
 
@@ -35,10 +36,18 @@ int main()
 
   // used to compute the RMSE later
   Tools tools;
+
   vector<VectorXd> estimations;
   vector<VectorXd> ground_truth;
 
+  if (DEBUG)
+    cout << "calling h.onMessage..." << endl;
+
   h.onMessage([&fusionEKF,&tools,&estimations,&ground_truth](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
+
+    if (DEBUG)
+      cout << "...called h.onMessage" << endl;
+
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -106,6 +115,10 @@ int main()
     	  ground_truth.push_back(gt_values);
           
           //Call ProcessMeasurment(meas_package) for Kalman filter
+
+          if (DEBUG)
+            cout << "main: calling fuisionEKF.ProcessMeasurement..." << endl;
+
     	  fusionEKF.ProcessMeasurement(meas_package);    	  
 
     	  //Push the current estimated x,y positon from the Kalman filter's state vector
@@ -134,7 +147,9 @@ int main()
           msgJson["rmse_vx"] = RMSE(2);
           msgJson["rmse_vy"] = RMSE(3);
           auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
-          // std::cout << msg << std::endl;
+
+          //std::cout << msg << std::endl;
+
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
 	  
         }
